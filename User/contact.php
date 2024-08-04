@@ -47,7 +47,7 @@
     <div class="container mt-5">
         <div class="row">
           <div class="col-md-6">
-            <img src="assets/desk1.jpg" class="img-fluid rounded" alt="...">
+            <img src="../assets/desk1.jpg" class="img-fluid rounded" alt="...">
           </div>
           <div class="col-md-6">
             <h2>Get in Touch <span>with Us!</span></h2>

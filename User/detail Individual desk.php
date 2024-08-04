@@ -5,6 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>NearbyU Space</title>
+    <link rel="stylesheet" href="booking.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
@@ -47,7 +50,7 @@
     <div class="container pt-5">
         <div class="row">
             <div class="col-md-6">
-                <img src="assets/desk3.jpg" class="img-fluid rounded" alt="...">
+                <img src="../assets/desk3.jpg" class="img-fluid rounded" alt="...">
             </div>
             <div class="col-md-6 ps-5">
                 <h4 class="fw-semibold">Individual Desk</h4>
@@ -69,7 +72,7 @@
                             <i class="fa-solid fa-print" style="color:#03829E"></i>
                             <span class="feature-text">Free Printer</span>
                         </div>
-                        <a href="Book Now.html" class="btn btn-dark px-3 py-2" role="button">Book Now</a>
+                        <a id="openModalBtn" class="btn btn-dark px-3 py-2" role="button">Book Now</a>
                         
                     </div>
             </div>
@@ -83,7 +86,7 @@
         <div class="row pt-3">
             <div class="col-sm-4">
                 <div class="card">
-                    <img src="assets/desk1.jpg" class="card-img-top" alt="...">
+                    <img src="../assets/desk1.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
                         <h5 class="card-title">Group Desk</h5>
                         <p class="card-text">Bareng Temen Asik!</p>
@@ -93,7 +96,7 @@
             </div>
             <div class="col-sm-4">
                 <div class="card">
-                  <img src="assets/desk2.jpg" class="card-img-top" alt="Collaborative Room">
+                  <img src="../assets/desk2.jpg" class="card-img-top" alt="Collaborative Room">
                   <div class="card-body">
                     <h5 class="card-title">Collaborative Room</h5>
                     <p class="card-text">Ruangan Privat Untuk Kegiatan Skala Besar</p>
@@ -104,7 +107,7 @@
         </div>
     </div>
     <!-- Facility End -->
-     
+
     <!-- Footer Start -->
     <div class="footer bg-white border mt-5 pt-3">
         <div class="container">
@@ -152,7 +155,57 @@
     </div>
     <!-- Footer End -->
 
+    <!-- Modal -->
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="container d-flex justify-content-center align-items-center min-vh-600">
+            <div class="mb-3 row">
+                <h2 class="text-center mb-4" style="color:  #03829E;" >BOOKING FORM</h2>
+                <form id="booking-form">
+                    <div class="mb-3">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="Your Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="coworking-type">Select Coworking Type</label>
+                        <select class="form-select" id="coworking-type" aria-label="Default select example">
+                            <option value="" disabled selected>Select a type</option>
+                            <option value="Individual Desk">Individual Desk</option>
+                            <option value="Group Desk">Group Desk</option>
+                            <option value="Collaborative Room">Collaborative Room</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="day">Select Day</label>
+                        <input type="date" class="form-control" id="day" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="time-checkin">Select Time Check-in</label>
+                        <input type="time" class="form-control" id="time-checkin" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="time-checkout">Select Time Check-out</label>
+                        <input type="time" class="form-control" id="time-checkout" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="payment-method">Select Payment Method</label>
+                        <select class="form-select" id="payment-method" aria-label="Select a payment method">
+                            <option value="" disabled selected>Select a payment method</option>
+                            <option value="QRIS">QRIS</option>
+                            <option value="bank-transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-block">Book Now</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
+    <script src="./js/booking.js"></script>
     <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/6660ed681b.js" crossorigin="anonymous"></script>
 </body>

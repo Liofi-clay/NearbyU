@@ -52,7 +52,7 @@
                 <p style="text-align:justify">NearbyU coworking space adalah sebuah tempat untuk menunjang produktivitas secara individu ataupun kelompok. Tingkatkan produktivitas anda dengan workplace yang didesain dengan mengutamakan kenyamanan dalam berkonsentrasi saat berkerja, Suasana yang terkurasi dan nyaman untuk mendorong mood anda bekerja, berkolaborasi, berkreasi dan berkembang bersama. Tingkatkan produktivitasmu bersama NearbyU Coworking space!</p>
             </div>
             <div class="col-md-6">
-                <img src="assets/desk3.jpg" class="img-fluid rounded" alt="...">
+                <img src="../assets/desk3.jpg" class="img-fluid rounded" alt="...">
             </div>
         </div>
     </div>

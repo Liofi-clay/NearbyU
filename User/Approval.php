@@ -54,37 +54,45 @@
 <!-- Our Product Start -->
 <div class="container mt-5">
     <div class="card">
-        <div class="card-header">
-            <h3 class="card-title"style="Color:#03829E;">Booking Summary</h3>
+      <div class="card-body">
+        <h3 class="card-title text-center ont-weight-bold" style="color: #03829E;" >Booking Confirmation</h3>
+        <div class="row">
+          <div class="col-md-6">
+            <table class="table mt-4">
+              <tr>
+                <th>Co-working Type</th>
+                <td>Individual Desk</td>
+              </tr>
+              <tr>
+                <th>Day</th>
+                <td>08/12/24</td>
+              </tr>
+              <tr>
+                <th>Time Check-in</th>
+                <td>10.00</td>
+              </tr>
+              <tr>
+                <th>Time Check-out</th>
+                <td>11.00</td>
+              </tr>
+              <tr>
+                <th>Payment Method</th>
+                <td>QRIS</td>
+              </tr>
+              <tr>
+                <th>Total</th>
+                <td class="text-danger">Rp 6.000</td>
+              </tr>
+            </table>
+          </div>
+          <div class="col-md-6">
+            <p class="mt-5">Mohon menunggu persetujuan admin sebelum melanjutkan proses pembayaran. Silakan cek email Anda secara berkala karena tautan pembayaran akan dikirimkan ke email Anda.</p>
+            <p>Jika terdapat kendala anda dapat segera menghubungi <a href="#" class="text-info">Customer Service</a>.</p>
+          </div>
         </div>
-        <div class="card-body">
-            <div class="mb-3">
-                <strong>Name :</strong>
-            </div>
-            <div class="mb-3">
-                <strong>Space Type :</strong>
-            </div>
-            <div class="mb-3">
-                <strong>Day :</strong>
-            </div>
-            <div class="mb-3">
-                <strong>Check-In Time :</strong>
-            </div>
-            <div class="mb-3">
-                <strong>Check-Out Time :</strong>
-            </div>
-            <div class="mb-3">
-                <strong>Code Uniqe :</strong>
-            </div>
-            <div class="mb-3">
-                <strong>Payment Method :</strong>
-            </div>
-            <div class="mb-3">
-                <strong>Total Payment :</strong>
-        </div>
+      </div>
     </div>
-</div>
-</div>
+  </div>
 
 <!-- Our Product End -->
 
@@ -135,8 +143,10 @@
     </div>
 <!-- Footer End -->
 
-    <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="https://kit.fontawesome.com/6660ed681b.js" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 </body>
 
 </html>

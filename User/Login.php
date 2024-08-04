@@ -20,9 +20,10 @@
         <div class="form-group">
           <label for="password">Your password</label>
           <input type="password" class="form-control" id="password" placeholder="Your password" required>
+          <p class="text-center mt-3">This is your password to login to NearbyU Space<a href="Register.php">Forgot?</a></p>
         </div>
-        <button type="submit" class="btn btn-dark btn-block">Login</button>
-        <p class="text-center mt-3">Don't have an account? <a href="Sign in.html">Register</a></p>
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+        <p class="text-center mt-3">Don't have an account? <a href="Register.php">Register</a></p>
       </form>
     </div>
   </div>

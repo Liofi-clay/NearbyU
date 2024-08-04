@@ -47,7 +47,7 @@
     <div id="carouselExampleAutoplaying" class="carousel slide mx-5 p-2" data-bs-ride="carousel">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="assets/desk1.jpg" class="d-block w-100 object-fit-cover" style="max-height: 500px" alt="...">
+                <img src="../assets/desk1.jpg" class="d-block w-100 object-fit-cover" style="max-height: 500px" alt="...">
                 <div class="carousel-caption d-md-block" style="position:absolute; top: 30%">
                     <h1 class="fw-bold pb-3" style="color: #03829E;">NearbyU Space</h1>
                     <p class="text-dark pb-3">Tingkatkan produktivitasmu bersama NearbyU Coworking space</p>
@@ -73,7 +73,7 @@
             <div class="row">
                 <div class="col p-2">
                     <div class="card">
-                        <img src="assets/desk3.jpg" class="card-img-top" alt="...">
+                        <img src="../assets/desk3.jpg" class="card-img-top" alt="...">
                         <div class="card-body">
                             <h5 class="card-title">Individual Desk</h5>
                             <p class="card-text">Sendirian Tapi Nyaman </p>
@@ -84,7 +84,7 @@
                 </div>
                 <div class="col p-2">
                     <div class="card">
-                        <img src="assets/desk4.jpg" class="card-img-top" alt="...">
+                        <img src="../assets/desk4.jpg" class="card-img-top" alt="...">
                         <div class="card-body">
                             <h5 class="card-title">Group Desk</h5>
                             <p class="card-text">Bareng Temen Biar Asik </p>
@@ -95,7 +95,7 @@
                 </div>
                 <div class="col p-2">
                     <div class="card">
-                        <img src="assets/desk5.jpg" class="card-img-top" alt="...">
+                        <img src="../assets/desk5.jpg" class="card-img-top" alt="...">
                         <div class="card-body">
                             <h5 class="card-title">Collaborative Room</h5>
                             <p class="card-text">Ruangan Privat Untuk Kegiatan Skala Besar </p>

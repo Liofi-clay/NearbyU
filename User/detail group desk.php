@@ -47,7 +47,7 @@
     <div class="container pt-5">
         <div class="row">
             <div class="col-md-6">
-                <img src="assets/desk1.jpg" class="img-fluid rounded" alt="...">
+                <img src="../assets/desk1.jpg" class="img-fluid rounded" alt="...">
             </div>
             <div class="col-md-6 ps-5">
                 <h4 class="fw-semibold">Group Desk</h4>
@@ -82,7 +82,7 @@
         <div class="row pt-3">
             <div class="col-sm-4">
                 <div class="card">
-                    <img src="assets/desk3.jpg" class="card-img-top" alt="...">
+                    <img src="../assets/desk3.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
                         <h5 class="card-title">Individual Desk</h5>
                         <p class="card-text">Sendirian tapi nyaman!</p>
@@ -92,7 +92,7 @@
             </div>
             <div class="col-sm-4">
                 <div class="card">
-                    <img src="assets/desk2.jpg" class="card-img-top" alt="...">
+                    <img src="../assets/desk2.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
                         <h5 class="card-title">Collaborative Room</h5>
                         <p class="card-text">Ruangan Privat Untuk Kegiatan Skala Besar</p>

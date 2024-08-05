@@ -5,17 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OtpCode extends Model
+class ImageProduct extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'otp',
-        'user_id',
+        'image_url',
     ];
 
-    public function user()
+    public function products()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(Product::class);
     }
 }

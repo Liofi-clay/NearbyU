@@ -2,6 +2,7 @@ php artisan make:model Product -mcr
 php artisan make:model User -mcr
 php artisan make:model OtpCode -mcr
 php artisan make:model ImageProfile -mcr
+php artisan make:model ImageProduct -mcr
 php artisan make:model Role -mcr
 php artisan make:model Booking -mcr
 php artisan make:model OrderDetail -mcr

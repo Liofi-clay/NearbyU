@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class ImageProfile extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'image_url',
+    ];
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

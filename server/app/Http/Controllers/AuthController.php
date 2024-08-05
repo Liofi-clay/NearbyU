@@ -1,14 +1,17 @@
-<?php 
+<?php
 
 namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\OtpCode;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use App\Mail\OtpMail;
 
 class AuthController extends Controller
 {
@@ -16,9 +19,10 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'username' => 'required|string|max:25',
+            'email' => 'required|string|email|max:255|unique:users',
             'phone_number' => 'required|string|max:30',
             'password' => 'required|string|min:8',
-            'role_id' => 'required|integer|exists:role,id',
+            'role_id' => 'required|integer|exists:roles,id',
         ]);
 
         if ($validator->fails()) {
@@ -28,6 +32,7 @@ class AuthController extends Controller
         $user = User::create([
             'uuid' => Str::uuid(),
             'username' => $request->username,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
             'phone_number' => $request->phone_number,
             'role_id' => $request->role_id,
@@ -38,36 +43,25 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->only('username', 'password');
+        $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            $token = $user->createToken('Personal Access Token')->accessToken;
-
-            return response()->json(['token' => $token], 200);
+        if (!Auth::attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorised'], 401);
         }
 
-        return response()->json(['error' => 'Unauthorised'], 401);
-    }
-
-    public function sendOtp(Request $request)
-    {
-        $user = User::where('phone_number', $request->phone_number)->first();
-
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
-
+        $user = Auth::user();
         $otp = rand(1000, 9999);
-        OtpCode::create([
-            'otp' => $otp,
-            'user_id' => $user->id,
-        ]);
 
-        // Kirim OTP melalui SMS atau Email (implementasi disesuaikan)
-        // Mail::to($user->email)->send(new SendOtpMail($otp));
+        OtpCode::updateOrCreate(
+            ['user_id' => $user->id],
+            ['otp' => $otp]
+        );
 
-        return response()->json(['message' => 'OTP sent'], 200);
+        Mail::to($user->email)->send(new OtpMail($otp));
+
+        $token = $user->createToken('Personal Access Token')->plainTextToken;
+
+        return response()->json(['message' => 'OTP sent to your email', 'token' => $token], 200);
     }
 
     public function verifyOtp(Request $request)
@@ -84,6 +78,28 @@ class AuthController extends Controller
 
         $otpCode->delete();
 
-        return response()->json(['message' => 'Account verified'], 200);
+        $token = $user->createToken('Personal Access Token')->plainTextToken;
+
+        return response()->json(['message' => 'Account verified', 'token' => $token], 200);
+    }
+
+    public function resendOtp(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $otp = rand(1000, 9999);
+
+        OtpCode::updateOrCreate(
+            ['user_id' => $user->id],
+            ['otp' => $otp]
+        );
+
+        Mail::to($user->email)->send(new OtpMail($otp));
+
+        return response()->json(['message' => 'OTP resent to your email'], 200);
     }
 }

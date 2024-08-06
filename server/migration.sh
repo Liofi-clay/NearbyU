@@ -9,3 +9,4 @@ php artisan make:migration create_order_detail_table --create=order_detail
 php artisan make:migration create_payment_method_table --create=payment_method
 php artisan make:migration create_proof_of_payment_image_table --create=proof_of_payment_image
 php artisan make:migration create_status_table --create=status
+php artisan make:migration add_password_reset_fields_to_users_table --table=users

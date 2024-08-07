@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('proof_of_payment_image', function (Blueprint $table) {
+        Schema::create('proof_of_payment_images', function (Blueprint $table) {
             $table->id();
+            $table->string('image_url', 255)->nullable();
             $table->timestamps();
         });
     }
@@ -22,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('proof_of_payment_image');
+        Schema::dropIfExists('proof_of_payment_images');
     }
 };

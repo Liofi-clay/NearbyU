@@ -4,62 +4,77 @@ namespace App\Http\Controllers;
 
 use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Validator;
 
-class PaymentMethodController
+class PaymentMethodController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function create(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'payment_category' => 'required|string|max:255|unique:payment_methods',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $paymentMethod = PaymentMethod::create([
+            'payment_category' => $request->payment_category,
+        ]);
+
+        return response()->json(['message' => 'Payment method created successfully', 'payment_method' => $paymentMethod], 201);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function getAll()
     {
-        //
+        $paymentMethods = PaymentMethod::all();
+        return response()->json($paymentMethods, 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function getById($id)
     {
-        //
+        $paymentMethod = PaymentMethod::find($id);
+
+        if (!$paymentMethod) {
+            return response()->json(['error' => 'Payment method not found'], 404);
+        }
+
+        return response()->json($paymentMethod, 200);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(PaymentMethod $paymentMethod)
+    public function update(Request $request, $id)
     {
-        //
+        $paymentMethod = PaymentMethod::find($id);
+
+        if (!$paymentMethod) {
+            return response()->json(['error' => 'Payment method not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'payment_category' => 'required|string|max:255|unique:payment_methods,payment_category,' . $id,
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $paymentMethod->payment_category = $request->payment_category;
+        $paymentMethod->save();
+
+        return response()->json(['message' => 'Payment method updated successfully', 'payment_method' => $paymentMethod], 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(PaymentMethod $paymentMethod)
+    public function delete($id)
     {
-        //
-    }
+        $paymentMethod = PaymentMethod::find($id);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, PaymentMethod $paymentMethod)
-    {
-        //
-    }
+        if (!$paymentMethod) {
+            return response()->json(['error' => 'Payment method not found'], 404);
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(PaymentMethod $paymentMethod)
-    {
-        //
+        $paymentMethod->delete();
+
+        return response()->json(['message' => 'Payment method deleted successfully'], 200);
     }
 }

@@ -59,14 +59,12 @@ class AuthController extends Controller
 
         Mail::to($user->email)->send(new OtpMail($otp));
 
-        $token = $user->createToken('Personal Access Token')->plainTextToken;
-
-        return response()->json(['message' => 'OTP sent to your email', 'token' => $token], 200);
+        return response()->json(['message' => 'OTP sent to your email'], 200);
     }
 
     public function verifyOtp(Request $request)
     {
-        $otpCode = OtpCode::where('otp', $request->otp)->where('user_id', $request->user_id)->first();
+        $otpCode = OtpCode::where('otp', $request->otp)->first();
 
         if (!$otpCode) {
             return response()->json(['error' => 'Invalid OTP'], 400);

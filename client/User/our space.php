@@ -4,38 +4,91 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>NearbyU Space</title>
-    <link rel="stylesheet" href="booking.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        .card {
+            width: 100%;
+            height: 100%;
+        }
+        .card img {
+            max-height: 200px;
+            object-fit: cover;
+        }
+        .navbar {
+            padding: 1rem 2rem;
+        }
+        .navbar-brand {
+            color: #03829E !important;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        .nav-link {
+            font-weight: 500;
+            color: black;
+            margin-right: 1.5rem;
+        }
+        .nav-link.active {
+            color: #03829E !important;
+        }
+        .dropdown-menu {
+            min-width: 200px;
+        }
+        .dropdown-menu a {
+            color: black !important;
+        }
+        .navbar-toggler {
+            border: none;
+        }
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+        .navbar-toggler-icon {
+            color: black;
+        }
+        .navbar-nav .nav-item:last-child {
+            margin-right: 0;
+        }
+        .navbar-nav{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+        #navProfileImage {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg border sticky-top bg-white">
-        <div class="container p-2">
-            <a class="navbar-brand fw-semibold fs-4" href="#" style="color: #03829E;">NearbyU Space</a>
+    <nav class="navbar navbar-expand-lg sticky-top bg-white border-bottom">
+        <div class="container-fluid mx-5">
+            <a class="navbar-brand" href="#">NearbyU Space</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item me-4">
-                        <a class="nav-link fw-medium text-black" href="index.php">Home</a>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="index.php">Home</a>
                     </li>
-                    <li class="nav-item me-4">
-                        <a class="nav-link fw-medium" aria-current="page" href="our space.php" style="color: #03829E;">Our Space</a>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="our space.php">Our Space</a>
                     </li>
-                    <li class="nav-item me-4">
-                        <a class="nav-link fw-medium text-black" href="about.php">About</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.php">About</a>
                     </li>
-                    <li class="nav-item me-4">
-                        <a class="nav-link fw-medium text-black" href="Location.php">Location</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Location.php">Location</a>
                     </li>
-                    <li class="nav-item me-4">
-                        <a class="nav-link fw-medium text-black" href="contact.php">Contact</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.php">Contact</a>
                     </li>
-                    <li class="nav-item me-4">
-                        <a class="btn btn-dark fw-medium" href="Sign in.php" role="button">Sign In</a>
+                    <li class="nav-item">
+                        <div id="authMenu">
+                            <!-- This will be populated with Sign In button or Profile Menu based on user's login status -->
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -62,7 +115,7 @@
 
     <!-- Footer Start -->
     <div class="footer bg-white border mt-5 pt-3">
-        <div class="container">
+        <div class="container-fluid px-5">
             <div class="row">
                 <div class="col-md-6 d-flex flex-column">
                     <a class="navbar-brand fw-semibold fs-4" href="#" style="color: #03829E;">NearbyU Space</a>
@@ -110,13 +163,54 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/6660ed681b.js" crossorigin="anonymous"></script>
     <script>
-        const token = localStorage.getItem('token');
-        if (!token) {
-            alert('You are not logged in. Please log in first.');
-            window.location.href = 'Sign in.php';
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
+            const authMenu = document.getElementById('authMenu');
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+            // User is not logged in, show Sign In button
+                authMenu.innerHTML = `
+                    <a class="btn btn-dark fw-medium" href="Sign in.php" role="button">Sign In</a>
+                `;
+            } else {
+                // User is logged in, fetch user profile and update the menu
+                fetch('http://127.0.0.1:8000/api/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                        localStorage.removeItem('token');
+                        window.location.href = 'Sign in.php';
+                    } else {
+                        const profileImageUrl = data.image_profile ? `http://127.0.0.1:8000${data.image_profile}` : 'assets/profile.png';
+                        authMenu.innerHTML = `
+                            <div class="dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img src="${profileImageUrl}" width="40" class="rounded-circle" id="navProfileImage" alt="Profile Picture">
+                                    <span class="ms-2">${data.username}</span>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" href="Profile User.php">Profile</a></li>
+                                    <li><a class="dropdown-item" href="My Order.php">My Order</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#" onclick="logout()">Sign Out</a></li>
+                                </ul>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while fetching user profile.');
+                });
+            }
+
             fetch('http://127.0.0.1:8000/api/products', {
                 method: 'GET',
                 headers: {
@@ -173,7 +267,7 @@
                                         <div class="card-body">
                                             <h5 class="card-title">${product.space_type}</h5>
                                             <p class="card-text">${product.desc}</p>
-                                            <a href="detail space.php?id=${product.id}" class="btn btn-primary">Learn More</a>
+                                            <a href="detail space.php?id=${product.id}" class="btn btn-primary">Book Now</a>
                                         </div>
                                     </div>
                                 </div>
@@ -186,6 +280,11 @@
                 }
             })
             .catch(error => console.error('Error:', error));
+
+            function logout() {
+                localStorage.removeItem('token');
+                window.location.href = 'Sign in.php';
+            }
         });
     </script>
 </body>

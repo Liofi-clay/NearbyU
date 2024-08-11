@@ -24,6 +24,18 @@ class ProductController extends Controller
         return response()->json($products, 200);
     }
 
+    public function getindexWithoutLogin()
+    {
+        $products = Product::with(['imageProduct'])->get();
+
+        if ($products->isEmpty()) {
+            return response()->json(['message' => 'No products found'], 200);
+        }
+        
+        return response()->json($products, 200);
+
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

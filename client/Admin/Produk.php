@@ -75,7 +75,7 @@
                 </ul>
             </div>
             <div class="nav-item ms-auto">
-                <a class="nav-link fw-medium text-black" href="Profile User.php">
+                <a class="nav-link fw-medium text-black" href="Akun Admin.php">
                    Admin <img src="../assets/profile.png" width="30" id="navProfileImage" alt="Profile Picture">
                  </a>
             </div>

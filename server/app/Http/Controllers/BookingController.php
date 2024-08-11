@@ -211,6 +211,58 @@ class BookingController extends Controller
         return response()->json(['message' => 'Booking created successfully', 'booking' => $booking], 201);
     }
 
+    public function getSalesData()
+    {
+        $salesData = Booking::selectRaw('MONTH(order_details.day) as month, COALESCE(SUM(order_details.total_cost), 0) as total_sales')
+            ->join('order_details', 'bookings.order_detail_id', '=', 'order_details.id')
+            ->groupByRaw('MONTH(order_details.day)')
+            ->get()
+            ->keyBy('month')
+            ->toArray();
+    
+        $months = range(1, 12);
+        $sales = [];
+    
+        foreach ($months as $month) {
+            $sales[] = [
+                'month' => $month,
+                'total_sales' => isset($salesData[$month]) ? $salesData[$month]['total_sales'] : 0
+            ];
+        }
+    
+        return response()->json($sales, 200);
+    }
+    
+    public function getBookingsThisMonth()
+    {
+        $currentMonth = Carbon::now()->month;
+
+        // Total Bookings
+        $totalBookings = Booking::whereHas('orderDetail', function($query) use ($currentMonth) {
+            $query->where('status_id', 1) // Booking
+                ->whereMonth('day', $currentMonth);
+        })->count();
+
+        // Total Payments
+        $totalPayments = Booking::whereHas('orderDetail', function($query) use ($currentMonth) {
+            $query->where('status_id', 2) // Payment
+                ->whereMonth('day', $currentMonth);
+        })->count();
+
+        // Total Active
+        $totalActive = Booking::whereHas('orderDetail', function($query) use ($currentMonth) {
+            $query->where('status_id', 3) // Active
+                ->whereMonth('day', $currentMonth);
+        })->count();
+
+        return response()->json([
+            'month' => $currentMonth,
+            'total_bookings' => $totalBookings,
+            'total_payments' => $totalPayments,
+            'total_active' => $totalActive,
+        ], 200);
+    }
+    
     public function acceptBooking($id)
     {
         $booking = Booking::with('orderDetail')->find($id);

@@ -8,6 +8,10 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\ReportController;
+
+Route::get('/download-sales-report', [ReportController::class, 'downloadSalesReport'])->name('download.sales.report');
+Route::get('/download-active-orders-report', [ReportController::class, 'downloadActiveOrdersReport'])->name('download.active.orders.report');
 
 Route::post('payment-methods', [PaymentMethodController::class, 'create']);
 Route::get('payment-methods', [PaymentMethodController::class, 'getAll']);
@@ -37,9 +41,16 @@ Route::get('roles/{id}', [RoleController::class, 'getById']);
 Route::put('roles/{id}', [RoleController::class, 'update']);
 Route::delete('roles/{id}', [RoleController::class, 'delete']);
 
+Route::get('/products-noLog', [ProductController::class, 'getindexWithoutLogin']);
+
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/profile', [AuthController::class, 'getProfile']);
+    Route::post('/profile/update', [AuthController::class, 'updateProfile']);
+
     Route::get('products', [ProductController::class, 'index']);
     Route::get('products/{id}', [ProductController::class, 'show']);
+    Route::get('/sales-data', [BookingController::class, 'getSalesData']);
+    Route::get('/orders-this-month', [BookingController::class, 'getBookingsThisMonth']);
     Route::post('update-product/{id}', [ProductController::class,  'updateProduct']);
     Route::post('products', [ProductController::class, 'store']);
     Route::delete('products/{id}', [ProductController::class, 'destroy']);

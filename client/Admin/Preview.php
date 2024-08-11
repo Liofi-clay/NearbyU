@@ -86,7 +86,7 @@
                 </ul>
             </div>
             <div class="nav-item ms-auto">
-                <a class="nav-link fw-medium text-black" href="Profile User.php">
+                <a class="nav-link fw-medium text-black" href="Akun Admin.php">
                     Admin <img src="../assets/profile.png" width="30" id="navProfileImage" alt="Profile Picture">
                 </a>
             </div>
@@ -189,7 +189,7 @@
                 document.getElementById('previewRoomType').textContent = data.space_type;
                 document.getElementById('previewPrice').textContent = `${data.price}/jam`;
                 document.getElementById('previewQuota').textContent = `${data.kuota} orang`;
-                document.getElementById('previewSeats').textContent = `${data.kuota / 2} Kursi`; // Adjust according to your logic
+                document.getElementById('previewSeats').textContent = `${parseInt(data.kuota / 2)} Kursi`; // Adjust according to your logic
                 document.getElementById('previewDescription').textContent = data.desc;
 
                 // Populate the edit form with the product data

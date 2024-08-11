@@ -70,8 +70,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script>
+    const bookingId = new URLSearchParams(window.location.search).get('id');
     function directSummary(){
-      const bookingId = new URLSearchParams(window.location.search).get('id');
       window.location.href =  `Booking Summary.php?id=${bookingId}`
     }
 

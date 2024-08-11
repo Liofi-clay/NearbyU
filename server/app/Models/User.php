@@ -33,7 +33,7 @@ class User extends Authenticatable
 
     public function imageProfile()
     {
-        return $this->belongsTo(ImageProfile::class);
+        return $this->belongsTo(ImageProfile::class, 'image_profile_id');
     }
 
     public function role()

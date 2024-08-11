@@ -56,7 +56,7 @@
                         <a class="nav-link fw-medium text-black" href="contact.php">Contact</a>
                     </li>
                     <li class="nav-item me-4">
-                        <a class="btn btn-dark fw-medium" href="Sign in.php" role="button">Sign In</a>
+                        <a class="btn btn-dark fw-medium" href="Login.php" role="button">Sign In</a>
                     </li>
                 </ul>
             </div>
@@ -187,7 +187,7 @@
         const token = localStorage.getItem('token');
         if (!token) {
             alert('You are not logged in. Please log in first.');
-            window.location.href = 'Sign in.php';
+            window.location.href = 'Login.php';
         }
 
         document.addEventListener('DOMContentLoaded', function() {

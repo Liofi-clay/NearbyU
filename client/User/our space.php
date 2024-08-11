@@ -170,7 +170,7 @@
             if (!token) {
             // User is not logged in, show Sign In button
                 authMenu.innerHTML = `
-                    <a class="btn btn-dark fw-medium" href="Sign in.php" role="button">Sign In</a>
+                    <a class="btn btn-dark fw-medium" href="Login" role="button">Sign In</a>
                 `;
             } else {
                 // User is logged in, fetch user profile and update the menu
@@ -186,7 +186,7 @@
                     if (data.error) {
                         alert('Error: ' + data.error);
                         localStorage.removeItem('token');
-                        window.location.href = 'Sign in.php';
+                        window.location.href = 'Login.php';
                     } else {
                         const profileImageUrl = data.image_profile ? `http://127.0.0.1:8000${data.image_profile}` : 'assets/profile.png';
                         authMenu.innerHTML = `
@@ -211,7 +211,7 @@
                 });
             }
 
-            fetch('http://127.0.0.1:8000/api/products', {
+            fetch('http://127.0.0.1:8000/api/products-noLog', {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + token,
@@ -283,7 +283,7 @@
 
             function logout() {
                 localStorage.removeItem('token');
-                window.location.href = 'Sign in.php';
+                window.location.href = 'Login.php';
             }
         });
     </script>

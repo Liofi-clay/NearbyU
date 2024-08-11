@@ -17,7 +17,7 @@
             <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                    <a class="nav-link fw-medium"  aria-current="page" href="Dashboard.php" style="color: #03829E;">Dashboard</a>
+                    <a class="nav-link fw-medium text-black"  aria-current="page" href="Dashboard.php" style="color: #03829E;">Dashboard</a>
                     </li>
                     <li class="nav-item">
                     <a class="nav-link fw-medium text-black" href="Produk.php">Produk</a>
@@ -32,7 +32,7 @@
             </div>
                 <div class="nav-item ms-auto">
                 <a class="nav-link fw-medium text-black" href="Akun Admin.php">
-                   Admin <img src="../assets/profile.png" width="30" id="navProfileImage" alt="Profile Picture">
+                <div id="adminProfile"></div>
                  </a>
                 </div>
         </div>
@@ -43,13 +43,13 @@
 <div class="container mt-4">
         <h2>Admin Accounts</h2>
       <!-- Admin Account Card -->
-                <div class="d-flex align-items-center mb-3">
-                    <img src="../assets/Profile.png" alt="Admin Photo" class="rounded-circle me-3" width="100" height="100">
-                    <div>
-                        <h5 class="card-title" id="adminName">Admin Name</h5>
-                        <p class="card-text" id="adminEmail">admin@example.com</p>
-                    </div>
+            <div class="d-flex align-items-center mb-3">
+                <img id="adminPhoto" src="../assets/Profile.png" alt="Admin Photo" class="rounded-circle me-3" width="100" height="100">
+                <div>
+                    <h5 class="card-title" id="adminName"></h5>
+                    <p class="card-text" id="adminEmail"></p>
                 </div>
+            </div>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editAdminModal">Edit</button>
             <!-- Add Admin Account Button -->
              <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addAdminModal">Add Admin Account</button>
@@ -64,10 +64,6 @@
                         </div>
                         <div class="modal-body">
                             <form id="addAdminForm">
-                                <div class="mb-3">
-                                    <label for="addAdminPhoto" class="form-label">Upload Photo</label>
-                                    <input type="file" class="form-control" id="addAdminPhoto" required>
-                                </div>
                                 <div class="mb-3">
                                     <label for="addAdminName" class="form-label">Name</label>
                                     <input type="text" class="form-control" id="addAdminName" required>
@@ -89,8 +85,6 @@
                     </div>
                 </div>
             </div>
-                        </div>
-                    </div>
 
         <!-- Edit Admin Account Modal -->
         <div class="modal fade" id="editAdminModal" tabindex="-1" aria-labelledby="editAdminModalLabel" aria-hidden="true">
@@ -104,7 +98,7 @@
                         <form id="editAdminForm">
                             <div class="mb-3">
                                 <label for="adminPhoto" class="form-label">Upload Photo</label>
-                                <input type="file" class="form-control" id="adminPhoto" required>
+                                <input type="file" class="form-control" id="image" required>
                             </div>
                             <div class="mb-3">
                                 <label for="adminNameInput" class="form-label">Name</label>
@@ -156,36 +150,109 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById('editAdminForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            // Add your form submission logic here (e.g., AJAX request to update admin data)
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                alert('You are not logged in. Please log in first.');
+                window.location.href = 'Login_Admin.php';
+            } else {
+                // Get Admin Profile Data
+                fetch('http://127.0.0.1:8000/api/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const profileDiv = document.getElementById('adminProfile');
+                    const profileImageUrl = data.image_profile ? `http://127.0.0.1:8000${data.image_profile}` : '../assets/profile.png';
+                    profileDiv.innerHTML = `
+                        <img src="${profileImageUrl}" width="50" class="rounded-circle" id="navProfileImage" alt="Profile Picture">
+                        ${data.username}
+                    `;
+                    // Fill the form for editing
 
-            // Show the success toast notification
-            var successToast = new bootstrap.Toast(document.getElementById('successToast'));
-            successToast.show();
-
-            // Close the modal after submission
-            var editAdminModal = new bootstrap.Modal(document.getElementById('editAdminModal'));
-            editAdminModal.hide();
-
-            // Update the preview with the new data
-            document.getElementById('adminName').textContent = document.getElementById('adminNameInput').value;
-            document.getElementById('adminEmail').textContent = document.getElementById('adminEmailInput').value;
+                    document.getElementById('adminPhoto').src = profileImageUrl;
+                    document.getElementById('adminName').textContent = data.username;
+                    document.getElementById('adminEmail').textContent = data .email;
+                    document.getElementById('adminNameInput').value = data.username;
+                    document.getElementById('adminEmailInput').value = data.email;
+                })
+                .catch(error => console.error('Error:', error));
+            }
         });
 
+        // Update Admin Profile
+        document.getElementById('editAdminForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('username', document.getElementById('adminNameInput').value);
+            formData.append('email', document.getElementById('adminEmailInput').value);
+            formData.append('phone_number', '123');
+            formData.append('password', document.getElementById('adminPassword').value);
+            
+            const adminPhotoInput = document.getElementById('image');
+            formData.append('image', adminPhotoInput.files[0]);
+
+            const token = localStorage.getItem('adminToken');
+            fetch('http://127.0.0.1:8000/api/profile/update', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            })
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                if (data.message) {
+                    // Show success toast
+                    var successToast = new bootstrap.Toast(document.getElementById('successToast'));
+                    successToast.show();
+
+                    // Close the modal after submission
+                    var editAdminModal = new bootstrap.Modal(document.getElementById('editAdminModal'));
+                    editAdminModal.hide();
+                } else {
+                    alert('Error updating profile.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+
+        // Add New Admin
         document.getElementById('addAdminForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            // Add your form submission logic here (e.g., AJAX request to add new admin data)
+            const formData = new FormData();
+            formData.append('username', document.getElementById('addAdminName').value);
+            formData.append('email', document.getElementById('addAdminEmail').value);
+            formData.append('phone_number', '123');
+            formData.append('password', document.getElementById('addAdminPassword').value);
+            formData.append('role_id', 1); // Assuming 1 is the role_id for admin
 
-            // Show the success toast notification
-            var addSuccessToast = new bootstrap.Toast(document.getElementById('addSuccessToast'));
-            addSuccessToast.show();
+            fetch('http://127.0.0.1:8000/api/register', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    // Show success toast
+                    var addSuccessToast = new bootstrap.Toast(document.getElementById('addSuccessToast'));
+                    addSuccessToast.show();
 
-            // Close the modal after submission
-            var addAdminModal = new bootstrap.Modal(document.getElementById('addAdminModal'));
-            addAdminModal.hide();
-
-            // Optionally, you can update the page to reflect the new admin added
+                    // Optionally, you can update the page to reflect the new admin added
+                    var addAdminModal = new bootstrap.Modal(document.getElementById('addAdminModal'));
+                    addAdminModal.hide();
+                } else {
+                    alert('Error adding new admin.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
         });
     </script>
 </body>

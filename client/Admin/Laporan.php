@@ -32,7 +32,7 @@
             </div>
                 <div class="nav-item ms-auto">
                 <a class="nav-link fw-medium text-black" href="Profile User.php">
-                   Admin <img src="../assets/profile.png" width="30" id="navProfileImage" alt="Profile Picture">
+                <div id="adminProfile"></div>
                  </a>
                 </div>
         </div>
@@ -75,6 +75,24 @@
         if (!token) {
             alert('You are not logged in. Please log in first.');
             window.location.href = 'Login_Admin.php';
+        } else {
+            fetch('http://127.0.0.1:8000/api/profile', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                const profileDiv = document.getElementById('adminProfile');
+                const profileImageUrl = data.image_profile ? `http://127.0.0.1:8000${data.image_profile}` : '../assets/profile.png';
+                profileDiv.innerHTML = `
+                    <img src="${profileImageUrl}" width="50" class="rounded-circle" id="navProfileImage" alt="Profile Picture">
+                    ${data.username}
+                `;
+            })
+            .catch(error => console.error('Error:', error));
         }
 
         // Fetch and display the booking count, payment count, and active count

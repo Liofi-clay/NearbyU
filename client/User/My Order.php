@@ -111,7 +111,7 @@
         const token = localStorage.getItem('token');
         if (!token) {
             alert('You are not logged in. Please log in first.');
-            window.location.href = 'Sign in.php';
+            window.location.href = 'Login.php';
         }
 
         document.addEventListener('DOMContentLoaded', function() {

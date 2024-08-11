@@ -20,33 +20,45 @@
         <div class="form-group">
           <label for="password">Your password</label>
           <input type="password" class="form-control" id="password" placeholder="Your password" required>
-          <p class="text-center mt-3">This is your password to login to NearbyU Space<a href="Register.php">Forgot?</a></p>
+          <p class="text-center mt-3">This is your password to login to NearbyU Space<a href="register.php">Forgot?</a></p>
         </div>
         <button type="submit" class="btn btn-primary btn-block">Login</button>
-        <p class="text-center mt-3">Don't have an account? <a href="Register.php">Register</a></p>
+        <p class="text-center mt-3">Don't have an account? <a href="register.php">Register</a></p>
       </form>
     </div>
   </div>
 
-
-
-  <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script src="https://kit.fontawesome.com/6660ed681b.js" crossorigin="anonymous"></script>
   <script>
     document.getElementById('loginForm').addEventListener('submit', function(event) {
       event.preventDefault();
-      var email = document.getElementById('email').value;
-      var password = document.getElementById('password').value;
-    
-      // Example validation (replace with actual login logic)
-      if (email === 'example@example.com' && password === 'password') {
-        alert('Login successful!');
-        // Redirect to homepage or another page
-        window.location.href = 'index.html'; 
-      } else {
-        alert('Invalid email or password. Please try again.');
-      }
+
+      var data = {
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value
+      };
+
+      fetch('http://127.0.0.1:8000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          alert(data.message);
+          window.location.href = 'Verify code.php';
+        } else {
+          alert('Login failed: ' + JSON.stringify(data));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
     });
-    </script>
+  </script>
 </body>
 </html>

@@ -24,17 +24,6 @@ class ProductController extends Controller
         return response()->json($products, 200);
     }
 
-    public function adminIndex()
-    {
-        $products = Product::with(['imageProduct', 'user'])->get();
-
-        if ($products->isEmpty()) {
-            return response()->json(['message' => 'No products found'], 200);
-        }
-
-        return response()->json($products, 200);
-    }
-
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -82,7 +71,7 @@ class ProductController extends Controller
         return response()->json($product, 200);
     }
 
-    public function update(Request $request, $id)
+    public function updateProduct(Request $request, $id)
     {
         Log::info('Request all data:', $request->all());
         Log::info('Request files data:', $request->file());
@@ -92,8 +81,6 @@ class ProductController extends Controller
         if (!$product) {
             return response()->json(['error' => 'Product not found'], 404);
         }
-
-        Log::info('Product data: ', $product->toArray());
 
         $validator = Validator::make($request->all(), [
             'space_type' => 'required|string|max:255',
@@ -108,6 +95,13 @@ class ProductController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
+        // Update product details
+        $product->space_type = $request->space_type;
+        $product->price = $request->price;
+        $product->kuota = $request->kuota;
+        $product->desc = $request->desc;
+
+        // Update product image if exists
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('images', 'public');
             $imageProduct = ImageProduct::create([
@@ -116,18 +110,12 @@ class ProductController extends Controller
             $product->image_product_id = $imageProduct->id;
         }
 
-        // Update product details
-        $product->space_type = $request->space_type;
-        $product->price = $request->price;
-        $product->kuota = $request->kuota;
-        $product->desc = $request->desc;
-        $product->save();
+        $product->update();
 
         return response()->json($product, 200);
     }
 
-
-
+    
     public function destroy($id)
     {
         $product = Product::find($id);

@@ -48,19 +48,19 @@
             <div class="col-md-4">
                 <div class="card text p-3  text-white" style="background: #03829E;">
                 <h5 class="card-title">Booking</h5>
-                    <h2>10</h2>
+                    <h2 id="bookingCount">0</h2>
                 </div>
             </div>
             <div class="col-md-4">
             <div class="card text p-3  text-white" style="background: #009688">
                     <h5 class="card-title">Payment</h5>
-                    <h2>5</h2>
+                    <h2 id="paymentCount">0</h2>
                 </div>
             </div>
             <div class="col-md-4">
             <div class="card text p-3 text-white" style="background: #4caf50;" >
                     <h5 class="card-title">Active</h5>
-                    <h2>15</h2>
+                    <h2 id="activeCount">0</h2>
                 </div>
             </div>
         </div>
@@ -85,5 +85,30 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.js"></script>
     <script src="https://kit.fontawesome.com/6660ed681b.js" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                alert('You are not logged in. Please log in first.');
+                window.location.href = 'Login_Admin.php';
+            }
+
+            fetch('http://127.0.0.1:8000/api/booking-count', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                document.getElementById('bookingCount').textContent = data.booking_count;
+                document.getElementById('paymentCount').textContent = data.payment_count;
+                document.getElementById('activeCount').textContent = data.active_count;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
 </body>
 </html>

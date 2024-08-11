@@ -14,7 +14,7 @@ class Booking extends Model
         'user_id',
         'approval',
         'order_detail_id',
-        'qr_code', // Add this line
+        'qr_code',
     ];
 
     public function product()

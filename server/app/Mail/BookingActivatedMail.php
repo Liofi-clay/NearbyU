@@ -13,7 +13,7 @@ class BookingActivatedMail extends Mailable
     public $details;
     public $qrCodePath;
 
-    public function __construct(array $details, string $qrCodePath)
+    public function __construct($details, $qrCodePath)
     {
         $this->details = $details;
         $this->qrCodePath = $qrCodePath;
@@ -21,9 +21,11 @@ class BookingActivatedMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Your Booking is Activated')
-                    ->view('emails.bookingActivated')
-                    ->with('details', $this->details)
-                    ->attach($this->qrCodePath);
+        return $this->view('emails.booking_activated')
+                    ->subject('Booking Activated')
+                    ->attach($this->qrCodePath, [
+                        'as' => 'qr_code.png',
+                        'mime' => 'image/png',
+                    ]);
     }
 }

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('role_id');
             $table->timestamps();
 
-            $table->foreign('image_profile_id')->references('id')->on('image_profile')->onDelete('set null');
+            $table->foreign('image_profile_id')->references('id')->on('image_profiles')->onDelete('set null');
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
         });
     }

@@ -23,7 +23,7 @@
                         <a class="nav-link fw-medium" aria-current="page" href="index.php" style="color: #03829E;">Home</a>
                     </li>
                     <li class="nav-item me-4">
-                        <a class="nav-link fw-medium text-black" href="detail Individual desk.php">Our Space</a>
+                        <a class="nav-link fw-medium text-black" href="our space.php">Our Space</a>
                     </li>
                     <li class="nav-item me-4">
                         <a class="nav-link fw-medium text-black" href="about.php">About</a>

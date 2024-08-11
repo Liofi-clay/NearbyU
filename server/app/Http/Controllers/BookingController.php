@@ -17,30 +17,56 @@ use Illuminate\Support\Str;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class BookingController extends Controller
 {
-    public function getAllBookings()
-    {
-        $bookings = Booking::with(['product', 'user', 'orderDetail.proofOfPaymentImage', 'orderDetail.status'])
-                            ->whereHas('orderDetail', function ($query) {
-                                $query->where('status_id', 1); // Booking status ID
-                            })->get();
+    public function getBookings(Request $request)
+{
+    $status = $request->query('status');
+    $date = $request->query('date');
+    $search = $request->query('search');
+    
+    // Start query with necessary joins
+    $query = Booking::with(['product', 'user', 'orderDetail.proofOfPaymentImage', 'orderDetail.status'])
+        ->join('order_details', 'bookings.order_detail_id', '=', 'order_details.id');
 
-        if ($bookings->isEmpty()) {
-            return response()->json(['message' => 'No bookings found'], 200);
-        }
-
-        return response()->json($bookings, 200);
+    // Filter by status if provided
+    if ($status) {
+        $query->whereHas('orderDetail.status', function ($query) use ($status) {
+            $query->where('id', $status);
+        });
     }
+
+    // Filter by date if provided
+    if ($date) {
+        $query->whereDate('order_details.day', $date);
+    }
+
+    // Filter by search query if provided
+    if ($search) {
+        $query->where(function ($query) use ($search) {
+            $query->whereHas('user', function ($query) use ($search) {
+                $query->where('username', 'LIKE', '%' . $search . '%');
+            })
+            ->orWhere('order_details.unique_code', 'LIKE', '%' . $search . '%');
+        });
+    }
+
+    // Order by status_id
+    $query->orderByRaw("FIELD(order_details.status_id, 1, 2, 3)");
+
+    $bookings = $query->select('bookings.*')->get();
+
+    return response()->json($bookings, 200);
+}
+
+
 
     public function getBookingById($id)
     {
-        $booking = Booking::with(['product', 'user', 'orderDetail.proofOfPaymentImage', 'orderDetail.status'])
-                          ->where('id', $id)
-                          ->whereHas('orderDetail', function ($query) {
-                              $query->where('status_id', 1); // Booking status ID
-                          })->first();
+        $booking = Booking::with(['product', 'user', 'orderDetail.proofOfPaymentImage', 'orderDetail.status', 'orderDetail.paymentMethod'])
+                          ->where('id', $id)->first();
 
         if (!$booking) {
             return response()->json(['message' => 'Booking not found'], 404);
@@ -89,7 +115,7 @@ class BookingController extends Controller
     {
         $user = Auth::user();
 
-        $bookings = Booking::with(['product', 'orderDetail.proofOfPaymentImage', 'orderDetail.status'])
+        $bookings = Booking::with(['product', 'product.imageProduct', 'orderDetail.proofOfPaymentImage', 'orderDetail.status'])
             ->where('user_id', $user->id)
             ->get()
             ->sortBy(function($booking) {
@@ -116,18 +142,25 @@ class BookingController extends Controller
         return response()->json($bookings, 200);
     }
 
-    public function getBookingsByStatus($statusId)
+    public function getBookingCounts()
     {
-        $bookings = Booking::with(['product', 'user', 'orderDetail.proofOfPaymentImage', 'orderDetail.status'])
-                            ->whereHas('orderDetail', function ($query) use ($statusId) {
-                                $query->where('status_id', $statusId);
-                            })->get();
+        $bookingCount = Booking::whereHas('orderDetail', function($query) {
+            $query->where('status_id', 1);
+        })->count();
 
-        if ($bookings->isEmpty()) {
-            return response()->json(['message' => 'No bookings found'], 200);
-        }
+        $paymentCount = Booking::whereHas('orderDetail', function($query) {
+            $query->where('status_id', 2);
+        })->count();
 
-        return response()->json($bookings, 200);
+        $activeCount = Booking::whereHas('orderDetail', function($query) {
+            $query->where('status_id', 3); 
+        })->count();
+
+        return response()->json([
+            'booking_count' => $bookingCount,
+            'payment_count' => $paymentCount,
+            'active_count' => $activeCount,
+        ], 200);
     }
 
     public function createFromUser(Request $request)
@@ -233,7 +266,7 @@ class BookingController extends Controller
     public function verifyPayment($id)
     {
         $booking = Booking::with('orderDetail.proofOfPaymentImage', 'orderDetail.paymentMethod')->find($id);
-    
+
         if (!$booking) {
             return response()->json(['message' => 'Booking not found'], 404);
         }
@@ -241,40 +274,53 @@ class BookingController extends Controller
         if ($booking->orderDetail->status_id == 3) {
             return response()->json(['message' => 'Data was Activated'], 400);
         }
-    
+
         if (is_null($booking->orderDetail->proofOfPaymentImage->image_url)) {
             return response()->json(['message' => 'Payment proof not uploaded'], 400);
         }
-    
+
         $details = [
-            'username' => $booking->user->username, // Pastikan username ada
+            'username' => $booking->user->username,
             'space_type' => $booking->product->space_type,
             'day' => $booking->orderDetail->day,
             'check_in' => $booking->orderDetail->check_in,
             'check_out' => $booking->orderDetail->check_out,
             'payment_method' => $booking->orderDetail->paymentMethod->name,
         ];
-    
+
         $qrCodeDir = storage_path('app/public/qr_codes');
         if (!file_exists($qrCodeDir)) {
             mkdir($qrCodeDir, 0755, true);
         }
-    
-        $qrCodePath = $qrCodeDir . '/' . $booking->orderDetail->unique_code . '.png';
+
+        // Generate the QR code
         $qrCode = Builder::create()
             ->writer(new PngWriter())
             ->data(json_encode($details))
             ->build();
-    
+
+        $qrCodePath = storage_path('app/public/qr_codes/' . $booking->orderDetail->unique_code . '.png');
         Storage::put('public/qr_codes/' . $booking->orderDetail->unique_code . '.png', $qrCode->getString());
-    
-        $details['qr_code_path'] = 'storage/qr_codes/' . $booking->orderDetail->unique_code . '.png';
-        Mail::to($booking->user->email)->send(new BookingActivatedMail($details, $qrCodePath));
-    
-        $booking->qr_code = '/storage/qr_codes/' . $booking->orderDetail->unique_code . '.png';
+
+        if (!file_exists($qrCodePath)) {
+            Log::error('QR Code file not found after saving: ' . $qrCodePath);
+            return response()->json(['message' => 'QR Code file not found after saving'], 500);
+        }
+
+        Log::info('QR Code saved at: ' . $qrCodePath);
+
+        $qrCodeUrl = '/storage/qr_codes/' . $booking->orderDetail->unique_code . '.png';
+        $booking->qr_code = $qrCodeUrl;
         $booking->orderDetail->status_id = 3;
         $booking->orderDetail->save();
-    
+        $booking->save();
+
+        $details['qr_code_path'] = $qrCodeUrl;
+
+        Mail::to($booking->user->email)->send(new BookingActivatedMail($details, $qrCodePath));
+
+        Log::info('Booking after verification', ['booking' => $booking]);
+
         return response()->json(['message' => 'Payment verified and booking activated', 'booking' => $booking], 200);
-    }    
+    }
 }

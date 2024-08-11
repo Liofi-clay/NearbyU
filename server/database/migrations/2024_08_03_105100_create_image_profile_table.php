@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('image_profile', function (Blueprint $table) {
+        Schema::create('image_profiles', function (Blueprint $table) {
             $table->id();
-            $table->string('image_url', 255);
+            $table->string('image_url', 255)->nullable();
             $table->timestamps();
         });
     }
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('image_profile');
+        Schema::dropIfExists('image_profiles');
     }
 };

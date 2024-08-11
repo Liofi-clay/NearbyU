@@ -25,7 +25,7 @@
                     <a class="nav-link fw-medium text-black" href="index.php">Home</a>
                 </li>
                 <li class="nav-item me-4">
-                    <a class="nav-link fw-medium text-black" href="detail Individual desk.php">Our Space</a>
+                    <a class="nav-link fw-medium text-black" href="our space.php">Our Space</a>
                 </li>
                 <li class="nav-item me-4">
                     <a class="nav-link fw-medium text-black" href="about.php">About</a>

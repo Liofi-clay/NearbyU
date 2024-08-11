@@ -26,6 +26,7 @@ Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword']
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+Route::post('login-admin', [AuthController::class, 'loginAdmin']);
 Route::post('send-otp', [AuthController::class, 'sendOtp']);
 Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
 Route::post('resend-otp', [AuthController::class, 'resendOtp']);
@@ -36,23 +37,20 @@ Route::get('roles/{id}', [RoleController::class, 'getById']);
 Route::put('roles/{id}', [RoleController::class, 'update']);
 Route::delete('roles/{id}', [RoleController::class, 'delete']);
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('products', [ProductController::class, 'index']);
-    Route::post('products', [ProductController::class, 'store']);
     Route::get('products/{id}', [ProductController::class, 'show']);
-    Route::patch('products/{id}', [ProductController::class, 'update']);
+    Route::post('update-product/{id}', [ProductController::class,  'updateProduct']);
+    Route::post('products', [ProductController::class, 'store']);
     Route::delete('products/{id}', [ProductController::class, 'destroy']);
-
-    Route::get('bookings', [BookingController::class, 'getAllBookings']);
+    
+    Route::get('bookings', [BookingController::class, 'getBookings']);
     Route::get('bookings/{id}', [BookingController::class, 'getBookingById']);
     Route::get('booking-active', [BookingController::class, 'getActiveBookings']);
-    Route::get('/bookings/status/{statusId}', [BookingController::class, 'getBookingsByStatus']);
-    Route::post('bookings', [BookingController::class, 'createFromUser']);
+    Route::get('booking-count', [BookingController::class, 'getBookingCounts']);
+    Route::get('my-order', [BookingController::class, 'getMyOrder']);
     Route::patch('bookings/{id}/accept', [BookingController::class, 'acceptBooking']);
+    Route::post('bookings', [BookingController::class, 'createFromUser']);
     Route::post('bookings/{id}/upload-payment', [BookingController::class, 'uploadPaymentProof']);
-    Route::patch('bookings/{id}/verify-payment', [BookingController::class, 'verifyPayment']);
-});
-
-Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-    Route::get('admin/products', [ProductController::class, 'adminIndex']);
+    Route::post('bookings/{id}/verify-payment', [BookingController::class, 'verifyPayment']);
 });

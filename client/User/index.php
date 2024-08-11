@@ -6,11 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>NearbyU Space</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        .card {
+            width: 100%;
+            height: 100%;
+        }
+        .card img {
+            max-height: 200px;
+            object-fit: cover;
+        }
+    </style>
 </head>
 
 <body>
     <!-- Navbar Start -->
-
     <nav class="navbar navbar-expand-lg border sticky-top bg-white">
         <div class="container-fluid mx-5 p-2">
             <a class="navbar-brand fw-semibold fs-4" href="#" style="color: #03829E;">NearbyU Space</a>
@@ -23,7 +32,7 @@
                         <a class="nav-link fw-medium" aria-current="page" href="index.php" style="color: #03829E;">Home</a>
                     </li>
                     <li class="nav-item me-4">
-                        <a class="nav-link fw-medium text-black" href="detail Individual desk.php">Our Space</a>
+                        <a class="nav-link fw-medium text-black" href="our space.php">Our Space</a>
                     </li>
                     <li class="nav-item me-4">
                         <a class="nav-link fw-medium text-black" href="about.php">About</a>
@@ -70,40 +79,8 @@
     <div class="container mx-5 mt-5">
         <div class="container-fluid">
             <h3>Our Space</h3>
-            <div class="row">
-                <div class="col p-2">
-                    <div class="card">
-                        <img src="../assets/desk3.jpg" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">Individual Desk</h5>
-                            <p class="card-text">Sendirian Tapi Nyaman </p>
-                            <p class="fw-medium">1 Orang</p>
-                            <p class="fs-5 fw-semibold">IDR 6000 <br><span class="fs-6 fw-normal">Jam/Desk</span></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col p-2">
-                    <div class="card">
-                        <img src="../assets/desk4.jpg" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">Group Desk</h5>
-                            <p class="card-text">Bareng Temen Biar Asik </p>
-                            <p class="fw-medium">5 Orang</p>
-                            <p class="fs-5 fw-semibold">IDR 25000 <br><span class="fs-6 fw-normal">Jam/Desk</span></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col p-2">
-                    <div class="card">
-                        <img src="../assets/desk5.jpg" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">Collaborative Room</h5>
-                            <p class="card-text">Ruangan Privat Untuk Kegiatan Skala Besar </p>
-                            <p class="fw-medium">30 orang</p>
-                            <p class="fs-5 fw-semibold">IDR 700000 <br><span class="fs-6 fw-normal">/4 Jam</span></p>
-                        </div>
-                    </div>
-                </div>
+            <div class="row row-cols-1 row-cols-md-3 g-4" id="space-container">
+                <!-- Space items will be appended here -->
             </div>
         </div>
     </div>
@@ -178,8 +155,54 @@
     <!-- Footer End -->
 
 
-    <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/6660ed681b.js" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('You are not logged in. Please log in first.');
+                window.location.href = 'Sign in.php';
+                return;
+            }
+
+            fetch('http://127.0.0.1:8000/api/products', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Error: ' + data.message);
+                } else {
+                    const spaceContainer = document.getElementById('space-container');
+                    data.forEach(space => {
+                        const spaceCard = document.createElement('div');
+                        spaceCard.className = 'col-lg-4 col-md-6 col-sm-12 p-2';
+                        spaceCard.innerHTML = `
+                            <div class="card h-100">
+                                <img src="http://127.0.0.1:8000${space.image_product.image_url}" class="card-img-top" alt="...">
+                                <div class="card-body">
+                                    <h5 class="card-title">${space.space_type}</h5>
+                                    <p class="card-text">${space.desc}</p>
+                                    <p class="fw-medium">${space.kuota} Orang</p>
+                                    <p class="fs-5 fw-semibold">IDR ${space.price} <br><span class="fs-6 fw-normal">Jam/Desk</span></p>
+                                </div>
+                            </div>
+                        `;
+                        spaceContainer.appendChild(spaceCard);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while fetching spaces.');
+            });
+        });
+    </script>
 </body>
 
 </html>

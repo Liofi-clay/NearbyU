@@ -1,30 +1,29 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>NearbyU Space</title>
+    <link rel="stylesheet" href="booking.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
-
 <body>
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg border sticky-top bg-white">
-        <div class="container p-2 d-flex justify-content-between w-100">
-            <div>
-                <a class="navbar-brand fw-semibold fs-4" href="#" style="color: #03829E;">NearbyU Space</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
+        <div class="container p-2">
+            <a class="navbar-brand fw-semibold fs-4" href="#" style="color: #03829E;">NearbyU Space</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav ms-auto d-flex align-items-center">
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item me-4">
                         <a class="nav-link fw-medium text-black" href="index.php">Home</a>
                     </li>
                     <li class="nav-item me-4">
-                        <a class="nav-link fw-medium text-black" href="our space.php">Our Space</a>
+                        <a class="nav-link fw-medium" aria-current="page" href="our space.php" style="color: #03829E;">Our Space</a>
                     </li>
                     <li class="nav-item me-4">
                         <a class="nav-link fw-medium text-black" href="about.php">About</a>
@@ -36,14 +35,9 @@
                         <a class="nav-link fw-medium text-black" href="contact.php">Contact</a>
                     </li>
                     <li class="nav-item me-4">
-                        <a class="nav-link fw-medium" aria-current="page" href="index.php" style="color: #03829E;">My Order</a>
+                        <a class="btn btn-dark fw-medium" href="Sign in.php" role="button">Sign In</a>
                     </li>
                 </ul>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link" href="Profile User.php">
-                    <img src="assets/profile.png" width="50" id="navProfileImage" alt="Profile Picture">
-                </a>
             </div>
         </div>
     </nav>
@@ -51,12 +45,20 @@
 
     <!-- Our Product Start -->
     <div class="container pt-5">
-        <h4>My Order</h4>
-        <div class="row pt-3" id="orderList">
-            <!-- Orders will be populated by JavaScript -->
+        <div class="row" id="productMain">
+            <!-- Product main will be populated by JavaScript -->
         </div>
     </div>
     <!-- Our Product End -->
+
+    <!-- Facility Start -->
+    <div class="container pt-5">
+        <h4>Our Space</h4>
+        <div class="row pt-3" id="facilityList">
+            <!-- Facility list will be populated by JavaScript -->
+        </div>
+    </div>
+    <!-- Facility End -->
 
     <!-- Footer Start -->
     <div class="footer bg-white border mt-5 pt-3">
@@ -115,7 +117,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            fetch('http://127.0.0.1:8000/api/my-order', {
+            fetch('http://127.0.0.1:8000/api/products', {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + token,
@@ -126,51 +128,65 @@
                 if (data.error) {
                     alert(data.error);
                 } else {
-                    const orderList = document.getElementById('orderList');
-                    orderList.innerHTML = '';
-                    data.forEach(order => {
-                        const formattedTotalCost = new Intl.NumberFormat('id-ID', {
-                            style: 'currency',
-                            currency: 'IDR'
-                        }).format(order.order_detail.total_cost);
-
-                        let statusButton;
-                        switch (order.order_detail.status_id) {
-                            case 1:
-                                statusButton = `<button type="button" class="btn btn-outline-info">Booking</button>`;
-                                break;
-                            case 2:
-                                statusButton = `<button type="button" class="btn btn-outline-warning">Payment</button>`;
-                                break;
-                            case 3:
-                                statusButton = `<button type="button" class="btn btn-outline-success">Active</button>`;
-                                break;
-                            case 4:
-                                statusButton = `<button type="button" class="btn btn-outline-secondary">Done</button>`;
-                                break;
-                            default:
-                                statusButton = `<button type="button" class="btn btn-outline-secondary">Unknown</button>`;
-                        }
-
-                        orderList.innerHTML += `
-                            <div class="col-sm-4 mt-4">
-                                <div class="card">
-                                    <img src="http://127.0.0.1:8000${order.product.image_product['image_url']}" class="card-img-top" alt="${order.product.space_type}">
-                                    <div class="card-body">
-                                        <h5 class="card-title">${order.product.space_type}</h5>
-                                        <p class="card-text">Day: ${order.order_detail.day}<br><span class="fs-6 fw-normal">Code Uniqe: ${order.order_detail.unique_code}</span><br><span class="fs-6 fw-normal">Total Cost: ${formattedTotalCost}</span></p>
-                                        ${statusButton}
-                                        <a href="Booking Summary.php?id=${order.id}" class="btn btn-primary">Detail</a>
+                    if (data.length > 0) {
+                        // Display the first product in the main section
+                        const mainProduct = data[0];
+                        document.getElementById('productMain').innerHTML = `
+                            <div class="d-flex w-100 row">
+                                <div class="d-flex justify-content-center align-items-center col-md-6 w-50">
+                                <img src="http://127.0.0.1:8000${mainProduct.image_product.image_url}" class="img-fluid rounded" style="width: 100%; height: 70%;" alt="...">
+                            </div>
+                            <div class="d-flex flex-column justify-content-center col-md-6 ps-5 w-50">
+                                <h4 class="fw-semibold">${mainProduct.space_type}</h4>
+                                <p class="card-text">${mainProduct.desc}</p>
+                                <p class="fw-medium">${mainProduct.kuota} Orang</p>
+                                <p class="fs-5 fw-semibold">IDR ${mainProduct.price}/Jam/Desk</p>
+                                <p>Desain meja individu yang lebih memberikan privasi untuk meningkatkan fokus dan konsentrasi saat bekerja sendiri</p>
+                                <h5>Our Facility</h5>
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-6 text-align mb-4">
+                                        <i class="fa-solid fa-snowflake" style="color:#03829E"></i>
+                                        <span class="feature-text">Fresh Ac</span>
                                     </div>
+                                    <div class="col-md-3 col-sm-6 text-align mb-4">
+                                        <i class="fa-solid fa-wifi" style="color:#03829E"></i>
+                                        <span class="feature-text">Free Wifi</span>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 text-align mb-4">
+                                        <i class="fa-solid fa-print" style="color:#03829E"></i>
+                                        <span class="feature-text">Free Printer</span>
+                                    </div>
+                                    <a href="detail space.php?id=${mainProduct.id}" class="btn btn-dark px-3 py-2" role="button">Book Now</a>
                                 </div>
                             </div>
+                            </div>
                         `;
-                    });
+
+                        // Display the rest of the products in the facility section
+                        const facilityList = document.getElementById('facilityList');
+                        for (let i = 1; i < data.length; i++) {
+                            const product = data[i];
+                            facilityList.innerHTML += `
+                                <div class="col-sm-4">
+                                    <div class="card">
+                                        <img src="http://127.0.0.1:8000${product.image_product.image_url}" class="card-img-top" alt="...">
+                                        <div class="card-body">
+                                            <h5 class="card-title">${product.space_type}</h5>
+                                            <p class="card-text">${product.desc}</p>
+                                            <a href="detail space.php?id=${product.id}" class="btn btn-primary">Learn More</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        document.getElementById('productMain').innerHTML = '<p>No products found</p>';
+                        document.getElementById('facilityList').innerHTML = '<p>No products found</p>';
+                    }
                 }
             })
             .catch(error => console.error('Error:', error));
         });
     </script>
 </body>
-
 </html>

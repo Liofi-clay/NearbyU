@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Mail\OtpMail;
+use App\Models\ImageProfile;
 
 class AuthController extends Controller
 {
@@ -29,6 +30,8 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
+        $image_profile = ImageProfile::create(['image_url'=>null]);
+
         $user = User::create([
             'uuid' => Str::uuid(),
             'username' => $request->username,
@@ -36,6 +39,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'phone_number' => $request->phone_number,
             'role_id' => $request->role_id,
+            'image_profile_id' => $image_profile->id
         ]);
 
         return response()->json(['message' => 'User registered successfully', 'user' => $user], 201);
@@ -60,6 +64,25 @@ class AuthController extends Controller
         Mail::to($user->email)->send(new OtpMail($otp));
 
         return response()->json(['message' => 'OTP sent to your email'], 200);
+    }
+
+    public function loginAdmin(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (!Auth::attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorised'], 401);
+        }
+
+        $user = Auth::user();
+
+        if ($user->role_id != 1) { // Pastikan role_id 1 adalah untuk admin
+            return response()->json(['error' => 'role must be admin'], 401);
+        }
+
+        $token = $user->createToken('Admin Personal Access Token')->plainTextToken;
+
+        return response()->json(['message' => 'logged in successfully', 'token' => $token], 200);
     }
 
     public function verifyOtp(Request $request)

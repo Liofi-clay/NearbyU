@@ -15,7 +15,7 @@
         <li>Payment Method: {{ $details['payment_method'] }}</li>
     </ul>
     <p>Please find your QR code below:</p>
-    <img src="{{ $message->embed($details['qr_code_path']) }}" alt="QR Code">
+    <img src="{{ asset($details['qr_code_path'])  }}" alt="QR Code">
     <p>Thank you for your booking.</p>
 </body>
 </html>

@@ -36,14 +36,11 @@
                         <a class="nav-link fw-medium text-black" href="contact.php">Contact</a>
                     </li>
                     <li class="nav-item me-4">
-                        <a class="nav-link fw-medium" aria-current="page" href="index.php" style="color: #03829E;">My Order</a>
+                        <div id="authMenu">
+                            <!-- This will be populated with Sign In button or Profile Menu based on user's login status -->
+                        </div>
                     </li>
                 </ul>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link" href="Profile User.php">
-                    <img src="assets/profile.png" width="50" id="navProfileImage" alt="Profile Picture">
-                </a>
             </div>
         </div>
     </nav>
@@ -109,12 +106,56 @@
     <script src="https://kit.fontawesome.com/6660ed681b.js" crossorigin="anonymous"></script>
     <script>
         const token = localStorage.getItem('token');
-        if (!token) {
-            alert('You are not logged in. Please log in first.');
-            window.location.href = 'Login.php';
-        }
 
         document.addEventListener('DOMContentLoaded', function() {
+            if (!token) {
+            // User is not logged in, show Sign In button
+                authMenu.innerHTML = `
+                    <a class="btn btn-dark fw-medium" href="Login" role="button">Sign In</a>
+                `;
+            } else {
+                // User is logged in, fetch user profile and update the menu
+                fetch('http://127.0.0.1:8000/api/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                        localStorage.removeItem('token');
+                        window.location.href = 'Login.php';
+                    } else {
+                        const profileImageUrl = data.image_profile ? `http://127.0.0.1:8000${data.image_profile}` : 'assets/profile.png';
+                        authMenu.innerHTML = `
+                            <div class="dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img src="${profileImageUrl}" width="40" class="rounded-circle" id="navProfileImage" alt="Profile Picture">
+                                    <span class="ms-2">${data.username}</span>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" href="Profile User.php">Profile</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><div class="dropdown-item" onclick="logout()">Sign Out</div></li>
+                                </ul>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while fetching user profile.');
+                });
+            }
+
+            function logout() {
+                localStorage.removeItem('token');
+                window.location.href = 'Login.php';
+            }
+
             fetch('http://127.0.0.1:8000/api/my-order', {
                 method: 'GET',
                 headers: {

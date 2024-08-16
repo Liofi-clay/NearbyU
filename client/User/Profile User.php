@@ -42,10 +42,9 @@
             </ul>
         </div>
         <div class="nav-item">
-            <a class="nav-link" href="Profile User.php">
-                <img src="assets/profile.png" width="50" id="navProfileImage" alt="Profile Picture">
-            </a>
-        </div>
+            <div id="authMenu">
+                 <!-- This will be populated with Sign In button or Profile Menu based on user's login status -->
+            </div>
     </div>
 </nav>
 
@@ -61,29 +60,29 @@
                     <img id="profilePicPreview" src="https://via.placeholder.com/150" class="img-thumbnail" alt="Profile Picture Preview" style="max-width: 150px;">
                     <input type="file" class="form-control-file" id="profilePic" accept="image/*">
                 </div>
-                <div class="form-group">
-                 <label for="username">Name</label>
-                    <input type="text" class="form-control" id="username" placeholder="Enter username">
-                </div>
-                <div class="form-group">
-                    <label for="mobile">mobile number</label>
-                    <input type="tel" class="form-control" id="mobile" placeholder="Mobile number" required>
-                 </div>
-                <div class="form-group">
-                    <label for="password">email</label>
-                    <input type="email" class="form-control" id="email" placeholder="email">
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Password">
-                </div>
-                <div class="py-2 g-col-6">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                    <button type="submit" class="btn btn-danger">cancel</button>
-                </div>
+            </div>
+            <div class="form-group">
+                <label for="username">Name</label>
+                <input type="text" class="form-control" id="username" placeholder="Enter username" required>
+            </div>
+            <div class="form-group">
+                <label for="mobile">Mobile Number</label>
+                <input type="tel" class="form-control" id="mobile" placeholder="Mobile number" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Password">
+            </div>
+            <div class="py-2">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="button" class="btn btn-danger" onclick="window.location.href='index.php'">Cancel</button>
             </div>
         </form>
-      </div>
+    </div>
     <!-- Our Product End -->
 
     <!-- Footer Start -->
@@ -137,6 +136,114 @@
     <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/6660ed681b.js" crossorigin="anonymous"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const authMenu = document.getElementById('authMenu');
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                // User is not logged in, show Sign In button
+                authMenu.innerHTML = `
+                    <a class="btn btn-dark fw-medium" href="Login.php" role="button">Sign In</a>
+                `;
+            } else {
+                // User is logged in, fetch user profile and update the form and menu
+                fetch('http://127.0.0.1:8000/api/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                        localStorage.removeItem('token');
+                        window.location.href = 'Login.php';
+                    } else {
+                        const profileImageUrl = data.image_profile ? `http://127.0.0.1:8000${data.image_profile}` : 'assets/profile.png';
+                        
+                        // Update the form with user profile data
+                        document.getElementById('username').value = data.username;
+                        document.getElementById('email').value = data.email;
+                        document.getElementById('mobile').value = data.phone_number;
+                        document.getElementById('profilePicPreview').src = profileImageUrl;
+
+                        // Update the auth menu with user profile
+                        authMenu.innerHTML = `
+                            <div class="dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img src="${profileImageUrl}" width="40" class="rounded-circle" id="navProfileImage" alt="Profile Picture">
+                                    <span class="ms-2">${data.username}</span>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" href="My Order.php">My Order</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><div class="dropdown-item" onclick="logout()">Sign Out</div></li>
+                                </ul>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while fetching user profile.');
+                });
+            }
+
+        });
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'Login.php';
+        }
+
+        document.getElementById('profilePic').addEventListener('change', function(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var output = document.getElementById('profilePicPreview');
+                output.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        });
+
+        document.getElementById('Profile-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append('username', document.getElementById('username').value);
+            formData.append('email', document.getElementById('email').value);
+            formData.append('phone_number', document.getElementById('mobile').value);
+
+            const password = document.getElementById('password').value;
+            if (password) {
+                formData.append('password', password);
+            }
+
+            const profilePicInput = document.getElementById('profilePic');
+            if (profilePicInput.files && profilePicInput.files.length > 0) {
+                formData.append('image', profilePicInput.files[0]);
+            }
+
+            const token = localStorage.getItem('token');
+            fetch('http://127.0.0.1:8000/api/profile/update', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Profile updated successfully!');
+                    // Optionally reload the page or redirect to another page
+                } else {
+                    alert('Error updating profile: ' + JSON.stringify(data));
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
         document.getElementById('rofile-form').addEventListener('change', function(event) {
           var reader = new FileReader();
           reader.onload = function(){

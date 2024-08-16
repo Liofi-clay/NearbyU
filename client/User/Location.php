@@ -195,7 +195,7 @@
                                     <li><a class="dropdown-item" href="Profile User.php">Profile</a></li>
                                     <li><a class="dropdown-item" href="My Order.php">My Order</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="#" onclick="logout()">Sign Out</a></li>
+                                    <li><div class="dropdown-item" onclick="logout()">Sign Out</div></li>
                                 </ul>
                             </div>
                         `;
@@ -207,11 +207,11 @@
                 });
             }
 
-            function logout() {
-                localStorage.removeItem('token');
-                window.location.href = 'Login.php';
-            }
         });
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'Login.php';
+        }
     </script>
 </body>
 

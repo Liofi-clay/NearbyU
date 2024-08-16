@@ -114,12 +114,12 @@ class AuthController extends Controller
         }
     
         $validator = Validator::make($request->all(), [
-            'username' => 'required|required|string|max:25',
-            'email' => 'required|required|string|email|max:255|unique:users,email,' . $user->id,
-            'phone_number' => 'required|required|string|max:30',
-            'password' => 'required|required|string|min:8',
-            'image' => 'required|nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
-        ]);
+            'username' => 'required|string|max:25',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'phone_number' => 'required|string|max:30',
+            'password' => 'nullable|string|min:8',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);        
     
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
